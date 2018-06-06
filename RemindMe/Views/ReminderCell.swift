@@ -9,6 +9,8 @@
 import UIKit
 
 class ReminderCell: UITableViewCell {
+    
+    
 
     @IBOutlet weak var bubbleImageView: UIImageView!
     
@@ -20,10 +22,14 @@ class ReminderCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        switch selected {
-        case true: bubbleImageView.image = #imageLiteral(resourceName: "FilledCircle")
-        case false: bubbleImageView.image = #imageLiteral(resourceName: "UnfilledCircle")
-        }
+//        switch selected {
+//        case true:
+//            bubbleImageView.image = #imageLiteral(resourceName: "FilledCircle")
+//            
+//        case false:
+//            bubbleImageView.image = #imageLiteral(resourceName: "UnfilledCircle")
+//            
+//        }
         // Configure the view for the selected state
     }
 

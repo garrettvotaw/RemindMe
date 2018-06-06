@@ -7,13 +7,40 @@
 //
 
 import UIKit
+import CoreData
+import MapKit
+import CoreLocation
+import UserNotifications
 
-class ReminderDetailsController: UITableViewController {
+class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
 
+   
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
+    @IBOutlet weak var reminderTextField: UITextField!
     @IBOutlet weak var temporalReminderSwitch: UISwitch!
+    var context: NSManagedObjectContext!
+    var reminder: Reminder?
+    var region: MKCoordinateRegion?
+    var monitoredRegion: CLRegion?
+    var onArrival: Bool = true
+    lazy var manager = {
+        return LocationManager(locationDelegate: self)
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        if let reminder = reminder {
+            reminderTextField.text = reminder.text
+        }
+        
+        do {
+            try manager.requestWhenInUseAuthorization()
+            manager.requestLocation()
+        } catch {
+            print(error)
+        }
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(sender:))))
     }
 
     override func didReceiveMemoryWarning() {
@@ -22,20 +49,85 @@ class ReminderDetailsController: UITableViewController {
     }
 
     // MARK: - Table view data source
-
-    @IBAction func remindOnDaySwitched(_ sender: UISwitch) {
-       
+    
+    @IBAction func remindAtLocationSwitched(_ sender: Any) {
+        do {
+            try manager.requestAlwaysAuthorization()
+        } catch {
+            print(error)
+        }
+        
     }
     
-
-    /*
+    
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            view.endEditing(true)
+            
+        }
+        sender.cancelsTouchesInView = false
+    }
+    
+    @IBAction func donePushed(_ sender: Any) {
+        
+        if reminder != nil && reminderTextField.text == reminder?.text {
+            navigationController?.popToRootViewController(animated: true)
+        } else if reminder != nil && reminderTextField.text != reminder?.text {
+            reminder!.text = reminderTextField.text!
+            navigationController?.popToRootViewController(animated: true)
+        } else if reminder == nil {
+            guard let text = reminderTextField.text, !text.isEmpty else {return}
+            let _ = Reminder.with(text: text, alarm: nil, regionIdentifier: monitoredRegion!.identifier, in: context)
+            do {
+                try context.saveChanges()
+            } catch {
+                print(error)
+            }
+            navigationController?.popToRootViewController(animated: true)
+        }
+    }
+    
+    @IBAction func changedOnEntry(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+            onArrival = true
+        } else {
+            onArrival = false
+        }
+    }
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        guard let nextVC = segue.destination as? LocationController else {return}
+        nextVC.region = region
+        nextVC.manager = manager
+        nextVC.regionID = reminderTextField.text
+        nextVC.onArrival = onArrival
     }
-    */
+ 
 
 }
+
+
+extension ReminderDetailsController: LocationManagerDelegate {
+    func obtainedCoordinates(_ location: CLLocation) {
+        print("received location")
+        region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 50, longitudeDelta: 50))
+    }
+    
+    func failedWithError(_ error: LocationError) {
+        print(error)
+    }
+    
+    func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
+        print(status)
+    }
+    
+    
+}
+
+
+
+
+
