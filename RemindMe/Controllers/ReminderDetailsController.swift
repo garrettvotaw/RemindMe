@@ -17,7 +17,7 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
    
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var reminderTextField: UITextField!
-    @IBOutlet weak var temporalReminderSwitch: UISwitch!
+    @IBOutlet weak var remindAtLocationSwitch: UISwitch!
     var context: NSManagedObjectContext!
     var reminder: Reminder?
     var region: MKCoordinateRegion?
@@ -31,6 +31,7 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
         super.viewDidLoad()
         if let reminder = reminder {
             reminderTextField.text = reminder.text
+            remindAtLocationSwitch.isOn = reminder.remindAtLocation
         }
         
         do {
@@ -51,6 +52,8 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
     // MARK: - Table view data source
     
     @IBAction func remindAtLocationSwitched(_ sender: Any) {
+        guard let reminder = reminder else {return}
+        reminder.remindAtLocation = true
         do {
             try manager.requestAlwaysAuthorization()
         } catch {
@@ -69,15 +72,17 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
     }
     
     @IBAction func donePushed(_ sender: Any) {
-        
-        if reminder != nil && reminderTextField.text == reminder?.text {
-            navigationController?.popToRootViewController(animated: true)
-        } else if reminder != nil && reminderTextField.text != reminder?.text {
-            reminder!.text = reminderTextField.text!
-            navigationController?.popToRootViewController(animated: true)
-        } else if reminder == nil {
+        if let reminder = reminder {
+            if reminder.text == reminderTextField.text || reminder.remindAtLocation == remindAtLocationSwitch.isOn {
+                navigationController?.popToRootViewController(animated: true)
+            } else if reminder.text != reminderTextField.text || reminder.remindAtLocation != remindAtLocationSwitch.isOn {
+                reminder.text = reminderTextField.text!
+                reminder.remindAtLocation = remindAtLocationSwitch.isOn
+            } else {print("Issues Occured")}
+        } else {
+            print("Reminder did not exist")
             guard let text = reminderTextField.text, !text.isEmpty else {return}
-            let _ = Reminder.with(text: text, alarm: nil, regionIdentifier: monitoredRegion!.identifier, in: context)
+            let _ = Reminder.with(text: text, alarm: nil, regionIdentifier: monitoredRegion?.identifier, in: context, remindAtLocation: remindAtLocationSwitch.isOn)
             do {
                 try context.saveChanges()
             } catch {

@@ -202,6 +202,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="remindAtLocationSwitch" destination="Kxz-6c-ulV" id="fFU-X0-JSx"/>
                         <outlet property="reminderTextField" destination="NUd-h3-Sph" id="enx-rB-cVy"/>
                         <outlet property="segmentedControl" destination="T5X-PZ-gxg" id="fEU-GI-1RP"/>
                     </connections>

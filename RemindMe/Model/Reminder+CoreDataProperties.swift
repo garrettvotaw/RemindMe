@@ -25,14 +25,16 @@ extension Reminder {
     @NSManaged public var completed: Bool
     @NSManaged public var createdOn: NSDate
     @NSManaged public var regionIdentifier: String?
+    @NSManaged public var remindAtLocation: Bool
     
-    @nonobjc class func with(text: String, alarm: NSDate?, regionIdentifier: String?, in context: NSManagedObjectContext) -> Reminder {
+    @nonobjc class func with(text: String, alarm: NSDate?, regionIdentifier: String?, in context: NSManagedObjectContext, remindAtLocation: Bool) -> Reminder {
         let reminder = NSEntityDescription.insertNewObject(forEntityName: "Reminder", into: context) as! Reminder
         
         reminder.createdOn = Date() as NSDate
         reminder.text = text
         reminder.alarm = alarm
         reminder.regionIdentifier = regionIdentifier
+        reminder.remindAtLocation = remindAtLocation
         
         return reminder
     }
