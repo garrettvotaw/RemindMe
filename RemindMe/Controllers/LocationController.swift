@@ -16,13 +16,23 @@ class LocationController: UITableViewController, MKLocalSearchCompleterDelegate 
     var locationRequest: MKLocalSearchRequest?
     var region: MKCoordinateRegion?
     var locations: [MKMapItem] = []
-    var manager: LocationManager?
+    lazy var manager: LocationManager = {
+        return LocationManager(locationDelegate: self)
+    }()
     var regionID: String?
     var monitoredRegion: CLRegion?
     var onArrival: Bool?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        do {
+            try manager.requestWhenInUseAuthorization()
+            try manager.requestAlwaysAuthorization()
+            manager.requestLocation()
+        } catch {
+            print(error)
+        }
+        
         searchBar.delegate = self
         tableView.estimatedRowHeight = 73.0
     }
@@ -84,7 +94,8 @@ class LocationController: UITableViewController, MKLocalSearchCompleterDelegate 
             // Make sure region monitoring is supported.
             if CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
                 // Register the region.
-                let region = CLCircularRegion(center: center, radius: 50.0, identifier: identifier)
+                
+                let region = CLCircularRegion(center: center, radius: 100.0, identifier: identifier)
                 if onEntry {
                     region.notifyOnEntry = true
                     region.notifyOnExit = false
@@ -95,7 +106,7 @@ class LocationController: UITableViewController, MKLocalSearchCompleterDelegate 
                 self.monitoredRegion = region
                 
                 
-                manager?.startMonitoring(region)
+                manager.startMonitoring(region)
             }
         }
     }
@@ -111,6 +122,24 @@ class LocationController: UITableViewController, MKLocalSearchCompleterDelegate 
 }
 
 // MARK: - Extensions
+
+extension LocationController: LocationManagerDelegate {
+    func obtainedCoordinates(_ location: CLLocation) {
+        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, 30000.0, 30000.0)
+        self.region = region
+        print("received coordinate")
+    }
+    
+    func failedWithError(_ error: LocationError) {
+        
+    }
+    
+    func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
+        
+    }
+    
+    
+}
 
 
 extension LocationController: UISearchBarDelegate {

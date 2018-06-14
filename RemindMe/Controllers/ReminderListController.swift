@@ -21,7 +21,7 @@ class ReminderListController: UITableViewController {
         return controller
     }()
     let notificationCenter = UNUserNotificationCenter.current()
-    let locationManager = CLLocationManager()
+    lazy var locationManager = CLLocationManager()
     
 
     override func viewDidLoad() {

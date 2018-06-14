@@ -23,9 +23,6 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
     var region: MKCoordinateRegion?
     var monitoredRegion: CLRegion?
     var onArrival: Bool = true
-    lazy var manager = {
-        return LocationManager(locationDelegate: self)
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,14 +30,6 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
             reminderTextField.text = reminder.text
             remindAtLocationSwitch.isOn = reminder.remindAtLocation
         }
-        
-        do {
-            try manager.requestWhenInUseAuthorization()
-            manager.requestLocation()
-        } catch {
-            print(error)
-        }
-        
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(sender:))))
     }
 
@@ -54,11 +43,6 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
     @IBAction func remindAtLocationSwitched(_ sender: Any) {
         guard let reminder = reminder else {return}
         reminder.remindAtLocation = true
-        do {
-            try manager.requestAlwaysAuthorization()
-        } catch {
-            print(error)
-        }
         
     }
     
@@ -73,12 +57,21 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
     
     @IBAction func donePushed(_ sender: Any) {
         if let reminder = reminder {
-            if reminder.text == reminderTextField.text || reminder.remindAtLocation == remindAtLocationSwitch.isOn {
+            if reminder.text == reminderTextField.text && reminder.remindAtLocation == remindAtLocationSwitch.isOn && reminder.regionIdentifier == monitoredRegion?.identifier {
                 navigationController?.popToRootViewController(animated: true)
             } else if reminder.text != reminderTextField.text || reminder.remindAtLocation != remindAtLocationSwitch.isOn {
                 reminder.text = reminderTextField.text!
                 reminder.remindAtLocation = remindAtLocationSwitch.isOn
-            } else {print("Issues Occured")}
+                do {
+                    try context.saveChanges()
+                } catch {
+                    print(error)
+                }
+                navigationController?.popToRootViewController(animated: true)
+            } else {
+                print("Issues Occured")
+                navigationController?.popToRootViewController(animated: true)
+            }
         } else {
             print("Reminder did not exist")
             guard let text = reminderTextField.text, !text.isEmpty else {return}
@@ -106,30 +99,11 @@ class ReminderDetailsController: UITableViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let nextVC = segue.destination as? LocationController else {return}
         nextVC.region = region
-        nextVC.manager = manager
         nextVC.regionID = reminderTextField.text
         nextVC.onArrival = onArrival
     }
  
 
-}
-
-
-extension ReminderDetailsController: LocationManagerDelegate {
-    func obtainedCoordinates(_ location: CLLocation) {
-        print("received location")
-        region = MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 50, longitudeDelta: 50))
-    }
-    
-    func failedWithError(_ error: LocationError) {
-        print(error)
-    }
-    
-    func didChangeAuthorizationStatus(_ status: CLAuthorizationStatus) {
-        print(status)
-    }
-    
-    
 }
 
 

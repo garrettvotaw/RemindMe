@@ -24,6 +24,7 @@
 		A7B8651F20AF7D9800ADB664 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8651E20AF7D9800ADB664 /* CoreDataStack.swift */; };
 		A7B8652220AF837400ADB664 /* Reminder+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8652020AF837400ADB664 /* Reminder+CoreDataClass.swift */; };
 		A7B8652320AF837400ADB664 /* Reminder+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8652120AF837400ADB664 /* Reminder+CoreDataProperties.swift */; };
+		A7C3E93E20D2C15300396899 /* LocationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C3E93D20D2C15300396899 /* LocationDelegate.swift */; };
 		A7EB1D8720B9D60700097DA1 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EB1D8620B9D60700097DA1 /* LocationManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +69,7 @@
 		A7B8651E20AF7D9800ADB664 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		A7B8652020AF837400ADB664 /* Reminder+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Reminder+CoreDataClass.swift"; sourceTree = "<group>"; };
 		A7B8652120AF837400ADB664 /* Reminder+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Reminder+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A7C3E93D20D2C15300396899 /* LocationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDelegate.swift; sourceTree = "<group>"; };
 		A7EB1D8620B9D60700097DA1 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,6 +159,7 @@
 				A7B8652120AF837400ADB664 /* Reminder+CoreDataProperties.swift */,
 				A7B8651E20AF7D9800ADB664 /* CoreDataStack.swift */,
 				A7EB1D8620B9D60700097DA1 /* LocationManager.swift */,
+				A7C3E93D20D2C15300396899 /* LocationDelegate.swift */,
 				A77427F820C1C38F00E17C46 /* Utils.swift */,
 			);
 			path = Model;
@@ -314,6 +317,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7C3E93E20D2C15300396899 /* LocationDelegate.swift in Sources */,
 				A761839F20AF98130094EA62 /* LocationController.swift in Sources */,
 				A723AF1320A49FB3005F4B5B /* AppDelegate.swift in Sources */,
 				A723AF1B20A49FB3005F4B5B /* RemindMe.xcdatamodeld in Sources */,

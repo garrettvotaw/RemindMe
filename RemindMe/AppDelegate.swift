@@ -35,17 +35,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func handleEvent(forRegion region: CLRegion) {
+        var message = ""
+        //Get reminders
+        let context = CoreDataStack().managedObjectContext
+        let request: NSFetchRequest<Reminder> = Reminder.fetchRequest()
+        do {
+            let reminders = try context.fetch(request)
+            for reminder in reminders {
+                if reminder.regionIdentifier == region.identifier {
+                    message = reminder.text
+                }
+            }
+        } catch {
+            print(error)
+        }
         // Show an alert if application is active
         if UIApplication.shared.applicationState == .active {
-            let message = region.identifier
+            
             window?.rootViewController?.showAlert(withTitle: nil, message: message)
         } else {
             // Otherwise present a local notification
             let notification = UNMutableNotificationContent()
-            notification.subtitle = region.identifier
-            
-            let request = UNNotificationRequest(identifier: "Notification", content: notification, trigger: nil)
-            notificationCenter.add(request) { (error) in
+            notification.subtitle = message
+            let notificationRequest = UNNotificationRequest(identifier: "Notification", content: notification, trigger: nil)
+            notificationCenter.add(notificationRequest) { (error) in
                 if let error = error {
                     print(error)
                 }

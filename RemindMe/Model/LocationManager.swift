@@ -24,6 +24,9 @@ protocol LocationManagerDelegate: class {
 class LocationManager: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     weak var locationDelegate: LocationManagerDelegate?
+    var monitoredRegions: Set<CLRegion> {
+        return manager.monitoredRegions
+    }
     
     init(locationDelegate: LocationManagerDelegate) {
         self.locationDelegate = locationDelegate
